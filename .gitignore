@@ -1,0 +1,20 @@
+# .NET Build
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+
+# WebView2 Data
+MoyuBrowser_Data/
+EBWebView/
+
+# IDE
+.vs/
+.vscode/
+.claude/
+.gemini/
+
+# Misc
+*.local.json
+*.log

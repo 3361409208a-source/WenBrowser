@@ -38,21 +38,21 @@ public static class ThemeManager
             },
             AppTheme.Transparent => new ThemeColors
             {
-                HeaderBg = Color.FromArgb(20, 0, 0, 0),
-                ContentBg = Color.FromArgb(10, 0, 0, 0),
-                TabActive = Color.FromArgb(40, 255, 255, 255),
-                TabInactive = Color.Transparent,
+                HeaderBg = Color.FromArgb(40, 40, 45),
+                ContentBg = Color.FromArgb(20, 20, 25),
+                TabActive = Color.FromArgb(60, 60, 65),
+                TabInactive = Color.Transparent, // Panels support Color.Transparent if parent is set
                 TextColor = Color.White,
-                BorderColor = Color.FromArgb(30, 255, 255, 255)
+                BorderColor = Color.FromArgb(45, 45, 50)
             },
-            _ => new ThemeColors // Default Dark
+            _ => new ThemeColors 
             {
-                HeaderBg = Color.FromArgb(22, 22, 26),
-                ContentBg = Color.FromArgb(30,30,34),
-                TabActive = Color.FromArgb(40, 40, 45),
+                HeaderBg = Color.FromArgb(28, 28, 32),
+                ContentBg = Color.FromArgb(20, 20, 23),
+                TabActive = Color.FromArgb(45, 45, 52),
                 TabInactive = Color.Transparent,
-                TextColor = Color.Gray,
-                BorderColor = Color.FromArgb(50, 50, 55)
+                TextColor = Color.FromArgb(220, 220, 225),
+                BorderColor = Color.FromArgb(40, 40, 45)
             }
         };
     }

@@ -14,7 +14,7 @@ public enum AppTheme {
 public class AppSettings
 {
     public double DefaultOpacity { get; set; } = 0.95;
-    public string HomeUrl { get; set; } = "https://www.xiaoheiv.top";
+    public string HomeUrl { get; set; } = "https://wen-browser-web.vercel.app/";
     public bool AutoHideInTaskbar { get; set; } = true;
     public AppTheme CurrentTheme { get; set; } = AppTheme.Default;
 
@@ -24,6 +24,10 @@ public class AppSettings
     public bool IsCodeMode { get; set; } = false;       // 网页代码化伪装模式
     public double StealthOpacity { get; set; } = 0.15;   // 失去焦点时的透明度数值 (0.0 - 1.0)
     public string FakeTitle { get; set; } = "Wen 浏览器"; 
+    
+    // --- 字体配置 ---
+    public bool UseCustomFont { get; set; } = false;
+    public string CustomFontFamily { get; set; } = "Segoe UI";
     
     // --- 搜索引擎配置 ---
     public string SearchEngineName { get; set; } = "Bing";
@@ -46,8 +50,8 @@ public static class SettingsManager
             if (File.Exists(SettingsPath)) {
                 string json = File.ReadAllText(SettingsPath);
                 Current = JsonSerializer.Deserialize<AppSettings>(json) ?? new();
-                if (Current.HomeUrl.Contains("bing.com")) {
-                    Current.HomeUrl = "https://www.xiaoheiv.top";
+                if (Current.HomeUrl.Contains(".top") || Current.HomeUrl.Contains("bing.com")) {
+                    Current.HomeUrl = "https://wen-browser-web.vercel.app/";
                     Save();
                 }
             }

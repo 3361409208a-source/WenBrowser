@@ -15,7 +15,7 @@ public enum AppTheme {
 public class AppSettings
 {
     public double DefaultOpacity { get; set; } = 1.0;
-    public string HomeUrl { get; set; } = "https://moyu-browser-web.vercel.app/";
+    public string HomeUrl { get; set; } = "https://wen-browser-web.vercel.app/";
     public bool AutoHideInTaskbar { get; set; } = true;
     public AppTheme CurrentTheme { get; set; } = AppTheme.Default;
 
@@ -52,7 +52,7 @@ public static class SettingsManager
                 string json = File.ReadAllText(SettingsPath);
                 Current = JsonSerializer.Deserialize<AppSettings>(json) ?? new();
                 if (Current.HomeUrl.Contains(".top") || Current.HomeUrl.Contains("bing.com")) {
-                    Current.HomeUrl = "https://moyu-browser-web.vercel.app/";
+                    Current.HomeUrl = "https://wen-browser-web.vercel.app/";
                     Save();
                 }
             }

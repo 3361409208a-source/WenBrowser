@@ -20,5 +20,6 @@ EBWebView/
 *.log
 publish/
 *_Setup.exe
-logo.ico
-logo.png
+
+# Don't ignore assets (branding)
+!assets/

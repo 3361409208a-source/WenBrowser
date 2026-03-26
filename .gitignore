@@ -18,3 +18,7 @@ EBWebView/
 # Misc
 *.local.json
 *.log
+publish/
+*_Setup.exe
+logo.ico
+logo.png

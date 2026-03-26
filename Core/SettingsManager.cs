@@ -8,13 +8,14 @@ public enum AppTheme {
     Default,
     VSDark,
     OfficeWhite,
-    Transparent
+    Transparent,
+    Pink
 }
 
 public class AppSettings
 {
-    public double DefaultOpacity { get; set; } = 0.95;
-    public string HomeUrl { get; set; } = "https://wen-browser-web.vercel.app/";
+    public double DefaultOpacity { get; set; } = 1.0;
+    public string HomeUrl { get; set; } = "https://moyu-browser-web.vercel.app/";
     public bool AutoHideInTaskbar { get; set; } = true;
     public AppTheme CurrentTheme { get; set; } = AppTheme.Default;
 
@@ -23,7 +24,7 @@ public class AppSettings
     public bool IsGreyscale { get; set; } = false;      // 全局黑白模式
     public bool IsCodeMode { get; set; } = false;       // 网页代码化伪装模式
     public double StealthOpacity { get; set; } = 0.15;   // 失去焦点时的透明度数值 (0.0 - 1.0)
-    public string FakeTitle { get; set; } = "Wen 浏览器"; 
+    public string FakeTitle { get; set; } = "Moyu 浏览器"; 
     
     // --- 字体配置 ---
     public bool UseCustomFont { get; set; } = false;
@@ -51,7 +52,7 @@ public static class SettingsManager
                 string json = File.ReadAllText(SettingsPath);
                 Current = JsonSerializer.Deserialize<AppSettings>(json) ?? new();
                 if (Current.HomeUrl.Contains(".top") || Current.HomeUrl.Contains("bing.com")) {
-                    Current.HomeUrl = "https://wen-browser-web.vercel.app/";
+                    Current.HomeUrl = "https://moyu-browser-web.vercel.app/";
                     Save();
                 }
             }

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.WinForms;
@@ -58,11 +59,21 @@ public partial class MainForm : MoyuBaseForm
 
     private void InitializeTrayIcon()
     {
-        _trayIcon = new NotifyIcon {
-            Icon = SystemIcons.Application, // 后续可更换为透明图标或更隐蔽的图标
-            Visible = true,
-            Text = "Wen 浏览器 - 后台运行中"
-        };
+        _trayIcon = new NotifyIcon();
+        string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "logo.ico");
+        if (File.Exists(iconPath)) {
+            try {
+                this.Icon = new Icon(iconPath);
+                _trayIcon.Icon = this.Icon;
+            } catch {
+                _trayIcon.Icon = SystemIcons.Application;
+            }
+        } else {
+            _trayIcon.Icon = SystemIcons.Application;
+        }
+
+        _trayIcon.Visible = true;
+        _trayIcon.Text = "Moyu 浏览器 - 后台运行中";
 
         var trayMenu = new ContextMenuStrip();
         trayMenu.Items.Add("显示窗口", null, (s, e) => ShowMainForm());
@@ -102,7 +113,7 @@ public partial class MainForm : MoyuBaseForm
             e.Cancel = true;
             this.Visible = false;
             this.ShowInTaskbar = false;
-            _trayIcon.ShowBalloonTip(1000, "Wen 浏览器", "已切换至后台静默运行", ToolTipIcon.Info);
+            _trayIcon.ShowBalloonTip(1000, "Moyu 浏览器", "已切换至后台静默运行", ToolTipIcon.Info);
         }
         NativeMethods.UnregisterHotKey(this.Handle, BOSS_KEY_ID);
         NativeMethods.UnregisterHotKey(this.Handle, NEW_TAB_ID);
@@ -215,7 +226,18 @@ public partial class MainForm : MoyuBaseForm
         EnableDrag(_navRow);
 
         // --- 第一行：Logo、标签栏、窗口控制 ---
-        var btnLogo = new Label { Text = "WEN", Location = new Point(10, 5), Size = new Size(50, 24), ForeColor = colors.TextColor, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+        Control btnLogo;
+        string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "logo.png");
+        if (File.Exists(logoPath)) {
+            btnLogo = new PictureBox { 
+                Image = Image.FromFile(logoPath),
+                Location = new Point(10, 5), 
+                Size = new Size(24, 24),
+                SizeMode = PictureBoxSizeMode.Zoom
+            };
+        } else {
+            btnLogo = new Label { Text = "MOYU", Location = new Point(10, 5), Size = new Size(50, 24), ForeColor = colors.TextColor, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+        }
         _tabRow.Controls.Add(btnLogo);
 
         var btnHome = CreateIconButton("🏠", 65, 2, (s, e) => _activeTab?.WebView.CoreWebView2.Navigate(SettingsManager.Current.HomeUrl));
@@ -306,55 +328,64 @@ public partial class MainForm : MoyuBaseForm
 
     private void InitializeSettingsMenu()
     {
-        _settingsMenu = new Panel { Size = new Size(200, 480), BackColor = Color.FromArgb(40, 40, 45), BorderStyle = BorderStyle.FixedSingle, Visible = false, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+        _settingsMenu = new Panel { Size = new Size(200, 520), BackColor = Color.FromArgb(40, 40, 45), BorderStyle = BorderStyle.FixedSingle, Visible = false, Anchor = AnchorStyles.Top | AnchorStyles.Right };
         this.Controls.Add(_settingsMenu);
         _settingsMenu.Location = new Point(this.Width - 210, 50);
         _settingsMenu.BringToFront();
 
-        var lblTheme = new Label { Text = "视觉主题", ForeColor = Color.White, Location = new Point(10, 10), AutoSize = true };
+        int currentY = 10;
+        var lblTheme = new Label { Text = "视觉主题", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
         _settingsMenu.Controls.Add(lblTheme);
-        AddThemeOption("经典黑", AppTheme.Default, 1);
-        AddThemeOption("VS Code 暗", AppTheme.VSDark, 2);
-        AddThemeOption("Office 白", AppTheme.OfficeWhite, 3);
-        AddThemeOption("极简透明", AppTheme.Transparent, 4);
+        currentY += 25;
+
+        AddThemeOption("经典黑", AppTheme.Default, currentY); currentY += 35;
+        AddThemeOption("VS Code 暗", AppTheme.VSDark, currentY); currentY += 35;
+        AddThemeOption("Office 白", AppTheme.OfficeWhite, currentY); currentY += 35;
+        AddThemeOption("极简透明", AppTheme.Transparent, currentY); currentY += 35;
+        AddThemeOption("樱花粉", AppTheme.Pink, currentY); currentY += 35;
         
-        var sep1 = new Panel { Size = new Size(180, 1), BackColor = Color.Gray, Location = new Point(10, 140) };
+        currentY += 5;
+        var sep1 = new Panel { Size = new Size(180, 1), BackColor = Color.Gray, Location = new Point(10, currentY) };
         _settingsMenu.Controls.Add(sep1);
+        currentY += 10;
 
-        var lblEng = new Label { Text = "搜索引擎选择:", ForeColor = Color.Gray, Location = new Point(10, 150), AutoSize = true, Font = new Font("Segoe UI", 8) };
+        var lblEng = new Label { Text = "搜索引擎选择:", ForeColor = Color.Gray, Location = new Point(10, currentY), AutoSize = true, Font = new Font("Segoe UI", 8) };
         _settingsMenu.Controls.Add(lblEng);
-        AddEngineOption("Bing", "https://www.bing.com/search?q=", 175);
-        AddEngineOption("Google", "https://www.google.com/search?q=", 210);
-        AddEngineOption("Baidu", "https://www.baidu.com/s?wd=", 245);
+        currentY += 25;
 
-        var sep2 = new Panel { Size = new Size(180, 1), BackColor = Color.Gray, Location = new Point(10, 290) };
+        AddEngineOption("Bing", "https://www.bing.com/search?q=", currentY); currentY += 35;
+        AddEngineOption("Google", "https://www.google.com/search?q=", currentY); currentY += 35;
+        AddEngineOption("Baidu", "https://www.baidu.com/s?wd=", currentY); currentY += 35;
+
+        currentY += 10;
+        var sep2 = new Panel { Size = new Size(180, 1), BackColor = Color.Gray, Location = new Point(10, currentY) };
         _settingsMenu.Controls.Add(sep2);
+        currentY += 15;
         
-        // --- 字体设置扩展 ---
-        var lblFont = new Label { Text = "界面字体选择:", ForeColor = Color.White, Location = new Point(10, 305), AutoSize = true };
+        var lblFont = new Label { Text = "界面字体选择:", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
         _settingsMenu.Controls.Add(lblFont);
+        currentY += 25;
 
-        AddFontOption("默认字体 (Segoe UI)", 330, true);
+        AddFontOption("默认字体 (Segoe UI)", currentY, true);
+        currentY += 35;
 
-        var fontIndex = 0;
         foreach (var fontName in FontManager.AvailableFontNames)
         {
-            AddFontOption(fontName, 365 + (fontIndex * 35));
-            fontIndex++;
+            AddFontOption(fontName, currentY);
+            currentY += 35;
         }
         
-        int nextY = 365 + (fontIndex * 35) + 10;
-
-        var lblMoyu = new Label { Text = "核心方案 (隐蔽增强):", ForeColor = Color.White, Location = new Point(10, nextY), AutoSize = true };
+        currentY += 10;
+        var lblMoyu = new Label { Text = "核心方案 (隐蔽增强):", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
         _settingsMenu.Controls.Add(lblMoyu);
+        currentY += 25;
 
-        AddToggleOption("全局黑白模式 (极简护眼)", (s, e) => { SettingsManager.Current.IsGreyscale = !SettingsManager.Current.IsGreyscale; ApplyVisualEffects(); SettingsManager.Save(); }, nextY + 25);
-        AddToggleOption("伪装身份：财务文档 (Alt+W)", (s, e) => { SettingsManager.Current.FakeTitle = "3月财务审计草案.docx"; this.Text = SettingsManager.Current.FakeTitle; SettingsManager.Save(); }, nextY + 60);
-        AddToggleOption("全局老板键 (Alt+B 快捷隐藏)", (s, e) => { ToggleBossKey(); }, nextY + 95); 
-        AddToggleOption("重置标识 (Wen 浏览器)", (s, e) => { SettingsManager.Current.FakeTitle = "Wen 浏览器"; this.Text = "Wen 浏览器"; SettingsManager.Save(); }, nextY + 130);
+        AddToggleOption("全局黑白模式 (极简护眼)", (s, e) => { SettingsManager.Current.IsGreyscale = !SettingsManager.Current.IsGreyscale; ApplyVisualEffects(); SettingsManager.Save(); }, currentY); currentY += 35;
+        AddToggleOption("伪装身份：财务文档 (Alt+W)", (s, e) => { SettingsManager.Current.FakeTitle = "3月财务审计草案.docx"; this.Text = SettingsManager.Current.FakeTitle; SettingsManager.Save(); }, currentY); currentY += 35;
+        AddToggleOption("全局老板键 (Alt+B 快捷隐藏)", (s, e) => { ToggleBossKey(); }, currentY); currentY += 35; 
+        AddToggleOption("重置标识 (Moyu 浏览器)", (s, e) => { SettingsManager.Current.FakeTitle = "Moyu 浏览器"; this.Text = "Moyu 浏览器"; SettingsManager.Save(); }, currentY); currentY += 35;
         
-        // 由于增加了很多设置，调整高度
-        _settingsMenu.Height = nextY + 180;
+        _settingsMenu.Height = currentY + 20;
         _settingsMenu.Location = new Point(this.Width - 210, 50);
 
         ApplyGlobalFont();
@@ -423,9 +454,9 @@ public partial class MainForm : MoyuBaseForm
         _settingsMenu.Controls.Add(btn);
     }
 
-    private void AddThemeOption(string name, AppTheme theme, int index)
+    private void AddThemeOption(string name, AppTheme theme, int y)
     {
-        var btn = new Button { Text = name, Location = new Point(10, 35 + (index - 1) * 35), Size = new Size(180, 30), FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand, Font = new Font("Segoe UI", 8) };
+        var btn = new Button { Text = name, Location = new Point(10, y), Size = new Size(180, 30), FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand, Font = new Font("Segoe UI", 8) };
         btn.FlatAppearance.BorderSize = 0;
         btn.Click += (s, e) => { ApplyTheme(theme); SettingsManager.Current.CurrentTheme = theme; SettingsManager.Save(); };
         _settingsMenu.Controls.Add(btn);
@@ -446,7 +477,7 @@ public partial class MainForm : MoyuBaseForm
         _navRow.BackColor = colors.HeaderBg;
         _contentContainer.BackColor = colors.ContentBg;
         
-        _addressBar.BackColor = _searchBar.BackColor = (theme == AppTheme.OfficeWhite) ? Color.FromArgb(235, 235, 235) : Color.FromArgb(40, 40, 44);
+        _addressBar.BackColor = _searchBar.BackColor = colors.InputBg;
         _addressBar.ForeColor = _searchBar.ForeColor = colors.TextColor;
         
         _settingsMenu.BackColor = colors.HeaderBg;
@@ -474,7 +505,7 @@ public partial class MainForm : MoyuBaseForm
         {
             if (ctrl is Button btn) { 
                 btn.ForeColor = (SettingsManager.Current.SearchEngineName == btn.Text) ? Color.CadetBlue : colors.TextColor;
-                btn.FlatAppearance.MouseOverBackColor = (SettingsManager.Current.CurrentTheme == AppTheme.OfficeWhite) ? Color.FromArgb(220, 220, 220) : Color.FromArgb(50, 50, 55, 50);
+                btn.FlatAppearance.MouseOverBackColor = colors.HoverColor;
             }
             else if (ctrl is Label lbl) { lbl.ForeColor = colors.TextColor; }
             else if (ctrl is Panel p && (p == _settingsMenu || p == _headerPanel || p.Parent == _headerPanel)) UpdateControlColors(ctrl, colors);
@@ -664,7 +695,7 @@ public partial class MainForm : MoyuBaseForm
             Tag = Opacity; 
             this.Visible = false; // 彻底消失
             ShowInTaskbar = false; 
-            _trayIcon.ShowBalloonTip(500, "Wen 浏览器", "已进入老板模式", ToolTipIcon.Info);
+            _trayIcon.ShowBalloonTip(500, "Moyu 浏览器", "已进入老板模式", ToolTipIcon.Info);
         }
         else { 
             this.Visible = true;

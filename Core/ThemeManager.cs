@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace MoyuBrowser.Core;
+namespace WenBrowser.Core;
 
 public class ThemeColors
 {

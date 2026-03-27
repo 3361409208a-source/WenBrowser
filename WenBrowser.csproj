@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InternalName>MoyuBrowser</InternalName>
+    <InternalName>WenBrowser</InternalName>
     <ApplicationIcon>assets\logo.ico</ApplicationIcon>
   </PropertyGroup>
 

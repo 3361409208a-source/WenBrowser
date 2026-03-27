@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 
-namespace MoyuBrowser.Core;
+namespace WenBrowser.Core;
 
 public enum AppTheme {
     Default,
@@ -24,7 +24,7 @@ public class AppSettings
     public bool IsGreyscale { get; set; } = false;      // 全局黑白模式
     public bool IsCodeMode { get; set; } = false;       // 网页代码化伪装模式
     public double StealthOpacity { get; set; } = 0.15;   // 失去焦点时的透明度数值 (0.0 - 1.0)
-    public string FakeTitle { get; set; } = "Moyu 浏览器"; 
+    public string FakeTitle { get; set; } = "Wen 浏览器"; 
     
     // --- 字体配置 ---
     public bool UseCustomFont { get; set; } = false;

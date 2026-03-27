@@ -6,7 +6,7 @@ obj/
 *.sln.docstates
 
 # WebView2 Data
-MoyuBrowser_Data/
+WenBrowser_Data/
 EBWebView/
 
 # IDE

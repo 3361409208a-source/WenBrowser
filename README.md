@@ -1,4 +1,4 @@
-# 🌊 MoyuBrowser (摸鱼浏览器) 
+# 🌊 WenBrowser (Wen 浏览器) 
 
 <p align="center">
   <img src="assets/logo.png" width="128" height="128" />
@@ -14,9 +14,9 @@
 ---
 
 ## 🏗️ 项目简介 (Description)
-**MoyuBrowser** 是一款深度定制的办公隐匿型浏览器。它基于 **Microsoft Edge WebView2 (Chromium)** 内核，融合了多项针对职场环境设计的“隐匿防御”技术，为您在忙碌的商务办公中提供一个私密、高效且极具安全感的个人灵感空间。
+**WenBrowser** 是一款深度定制的办公隐匿型浏览器。它基于 **Microsoft Edge WebView2 (Chromium)** 内核，融合了多项针对职场环境设计的“隐匿防御”技术，为您在忙碌的商务办公中提供一个私密、高效且极具安全感的个人灵感空间。
 
-> **核心哲学**：Work Hard, Moyu Harder. 让专注回归本质，让放松不留痕迹。
+> **核心哲学**：Work Hard, Wen Harder. 让专注回归本质，让放松不留痕迹。
 
 ---
 
@@ -72,14 +72,14 @@
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
 ```
 
-- **[MoyuBrowser.iss](MoyuBrowser.iss)**: 标准 Inno Setup 脚本，用于生成带图标的安装程序。
+- **[WenBrowser.iss](WenBrowser.iss)**: 标准 Inno Setup 脚本，用于生成带图标的安装程序。
 - **[Install.ps1](Install.ps1)**: PowerShell 一键自动化部署脚本，适用于内网快速分发。
 
 ---
 
 > **实训总结 (Reflection)**：
-> MoyuBrowser 的开发不仅是对 **C# 12.0** 与 **.NET 8** 特性的实战验证，更是对底层操作系统交互逻辑与现代 Web 容器技术的深度融合尝试。它向我们展示了如何通过优秀的 UI 交互设计与底层逻辑封装，平衡个人隐私保护与职业环境适配。
+> WenBrowser 的开发不仅是对 **C# 12.0** 与 **.NET 8** 特性的实战验证，更是对底层操作系统交互逻辑与现代 Web 容器技术的深度融合尝试。它向我们展示了如何通过优秀的 UI 交互设计与底层逻辑封装，平衡个人隐私保护与职业环境适配。
 
 ---
 
-> "Work hard, Moyu harder." 🌊
+> "Work hard, Wen harder." 🌊

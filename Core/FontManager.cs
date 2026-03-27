@@ -4,7 +4,7 @@ using System.Drawing.Text;
 using System.IO;
 using System.Collections.Generic;
 
-namespace MoyuBrowser.Core;
+namespace WenBrowser.Core;
 
 public static class FontManager
 {

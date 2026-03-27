@@ -1,8 +1,8 @@
 using System;
 using System.Windows.Forms;
-using MoyuBrowser.UI.Forms;
+using WenBrowser.UI.Forms;
 
-namespace MoyuBrowser;
+namespace WenBrowser;
 
 static class Program
 {

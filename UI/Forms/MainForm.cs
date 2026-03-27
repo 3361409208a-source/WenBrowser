@@ -6,12 +6,12 @@ using Microsoft.Web.WebView2.WinForms;
 using Microsoft.Web.WebView2.Core;
 using System.Collections.Generic;
 using System.Linq;
-using MoyuBrowser.Core;
+using WenBrowser.Core;
 using System.Runtime.InteropServices;
 
-namespace MoyuBrowser.UI.Forms;
+namespace WenBrowser.UI.Forms;
 
-public partial class MainForm : MoyuBaseForm
+public partial class MainForm : WenBaseForm
 {
     private static MainForm? _instance;
     public static MainForm Instance => _instance ??= new MainForm();
@@ -73,7 +73,7 @@ public partial class MainForm : MoyuBaseForm
         }
 
         _trayIcon.Visible = true;
-        _trayIcon.Text = "Moyu 浏览器 - 后台运行中";
+        _trayIcon.Text = "Wen 浏览器 - 后台运行中";
 
         var trayMenu = new ContextMenuStrip();
         trayMenu.Items.Add("显示窗口", null, (s, e) => ShowMainForm());
@@ -113,7 +113,7 @@ public partial class MainForm : MoyuBaseForm
             e.Cancel = true;
             this.Visible = false;
             this.ShowInTaskbar = false;
-            _trayIcon.ShowBalloonTip(1000, "Moyu 浏览器", "已切换至后台静默运行", ToolTipIcon.Info);
+            _trayIcon.ShowBalloonTip(1000, "Wen 浏览器", "已切换至后台静默运行", ToolTipIcon.Info);
         }
         NativeMethods.UnregisterHotKey(this.Handle, BOSS_KEY_ID);
         NativeMethods.UnregisterHotKey(this.Handle, NEW_TAB_ID);
@@ -236,7 +236,7 @@ public partial class MainForm : MoyuBaseForm
                 SizeMode = PictureBoxSizeMode.Zoom
             };
         } else {
-            btnLogo = new Label { Text = "MOYU", Location = new Point(10, 5), Size = new Size(50, 24), ForeColor = colors.TextColor, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+            btnLogo = new Label { Text = "WEN", Location = new Point(10, 5), Size = new Size(50, 24), ForeColor = colors.TextColor, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
         }
         _tabRow.Controls.Add(btnLogo);
 
@@ -376,14 +376,14 @@ public partial class MainForm : MoyuBaseForm
         }
         
         currentY += 10;
-        var lblMoyu = new Label { Text = "核心方案 (隐蔽增强):", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
-        _settingsMenu.Controls.Add(lblMoyu);
+        var lblWen = new Label { Text = "核心方案 (隐蔽增强):", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
+        _settingsMenu.Controls.Add(lblWen);
         currentY += 25;
 
         AddToggleOption("全局黑白模式 (极简护眼)", (s, e) => { SettingsManager.Current.IsGreyscale = !SettingsManager.Current.IsGreyscale; ApplyVisualEffects(); SettingsManager.Save(); }, currentY); currentY += 35;
         AddToggleOption("伪装身份：财务文档 (Alt+W)", (s, e) => { SettingsManager.Current.FakeTitle = "3月财务审计草案.docx"; this.Text = SettingsManager.Current.FakeTitle; SettingsManager.Save(); }, currentY); currentY += 35;
         AddToggleOption("全局老板键 (Alt+B 快捷隐藏)", (s, e) => { ToggleBossKey(); }, currentY); currentY += 35; 
-        AddToggleOption("重置标识 (Moyu 浏览器)", (s, e) => { SettingsManager.Current.FakeTitle = "Moyu 浏览器"; this.Text = "Moyu 浏览器"; SettingsManager.Save(); }, currentY); currentY += 35;
+        AddToggleOption("重置标识 (Wen 浏览器)", (s, e) => { SettingsManager.Current.FakeTitle = "Wen 浏览器"; this.Text = "Wen 浏览器"; SettingsManager.Save(); }, currentY); currentY += 35;
         
         _settingsMenu.Height = currentY + 20;
         _settingsMenu.Location = new Point(this.Width - 210, 50);
@@ -515,7 +515,7 @@ public partial class MainForm : MoyuBaseForm
 
     private void ApplyVisualEffects()
     {
-        string styleId = "moyu-stealth-shield-v-final";
+        string styleId = "wen-stealth-shield-v-final";
         string css = "";
         
         // 黑白模式
@@ -532,8 +532,8 @@ public partial class MainForm : MoyuBaseForm
             string? fileName = FontManager.GetFontPath(SettingsManager.Current.CustomFontFamily);
             if (!string.IsNullOrEmpty(fileName))
             {
-                css += $"@font-face {{ font-family: 'MoyuCustomFont'; src: url('http://moyu.fonts/{fileName}'); }} ";
-                css += "* { font-family: 'MoyuCustomFont', sans-serif !important; } ";
+                css += $"@font-face {{ font-family: 'WenCustomFont'; src: url('http://wen.fonts/{fileName}'); }} ";
+                css += "* { font-family: 'WenCustomFont', sans-serif !important; } ";
             }
         }
 
@@ -607,11 +607,11 @@ public partial class MainForm : MoyuBaseForm
             
             SwitchToTab(tabData);
 
-            string userDataPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "MoyuBrowser_Data");
+            string userDataPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WenBrowser_Data");
             var env = await CoreWebView2Environment.CreateAsync(null, userDataPath);
             await wv.EnsureCoreWebView2Async(env);
 
-            wv.CoreWebView2.SetVirtualHostNameToFolderMapping("moyu.fonts", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "fonts"), CoreWebView2HostResourceAccessKind.Allow);
+            wv.CoreWebView2.SetVirtualHostNameToFolderMapping("wen.fonts", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "fonts"), CoreWebView2HostResourceAccessKind.Allow);
 
             wv.CoreWebView2.NewWindowRequested += (s, e) => {
                 e.Handled = true;
@@ -695,7 +695,7 @@ public partial class MainForm : MoyuBaseForm
             Tag = Opacity; 
             this.Visible = false; // 彻底消失
             ShowInTaskbar = false; 
-            _trayIcon.ShowBalloonTip(500, "Moyu 浏览器", "已进入老板模式", ToolTipIcon.Info);
+            _trayIcon.ShowBalloonTip(500, "Wen 浏览器", "已进入老板模式", ToolTipIcon.Info);
         }
         else { 
             this.Visible = true;

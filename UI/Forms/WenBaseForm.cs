@@ -1,13 +1,13 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using MoyuBrowser.Core;
+using WenBrowser.Core;
 
-namespace MoyuBrowser.UI.Forms;
+namespace WenBrowser.UI.Forms;
 
-public class MoyuBaseForm : Form
+public class WenBaseForm : Form
 {
-    public MoyuBaseForm()
+    public WenBaseForm()
     {
         this.FormBorderStyle = FormBorderStyle.None;
         this.Padding = new Padding(3);

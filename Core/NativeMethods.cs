@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MoyuBrowser.Core;
+namespace WenBrowser.Core;
 
 public static class NativeMethods
 {

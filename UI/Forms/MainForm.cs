@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace WenBrowser.UI.Forms;
 
-public partial class MainForm : WenBaseForm
+public partial class MainForm : WenBaseForm, IMessageFilter
 {
     private static MainForm? _instance;
     public static MainForm Instance => _instance ??= new MainForm();
@@ -27,6 +27,7 @@ public partial class MainForm : WenBaseForm
     private Button _btnNewTab = null!;
     private System.Windows.Forms.Timer _stealthTimer = null!;
     private NotifyIcon _trayIcon = null!;
+    private Button _btnSettings = null!;
     private const int BOSS_KEY_ID = 888; 
     private const int NEW_TAB_ID = 889;
     private const int CLOSE_TAB_ID = 890;
@@ -55,6 +56,7 @@ public partial class MainForm : WenBaseForm
         _stealthTimer.Start();
 
         ApplyTheme(SettingsManager.Current.CurrentTheme);
+        Application.AddMessageFilter(this);
     }
 
     private void InitializeTrayIcon()
@@ -113,7 +115,6 @@ public partial class MainForm : WenBaseForm
             e.Cancel = true;
             this.Visible = false;
             this.ShowInTaskbar = false;
-            _trayIcon.ShowBalloonTip(1000, "Wen 浏览器", "已切换至后台静默运行", ToolTipIcon.Info);
         }
         NativeMethods.UnregisterHotKey(this.Handle, BOSS_KEY_ID);
         NativeMethods.UnregisterHotKey(this.Handle, NEW_TAB_ID);
@@ -258,13 +259,13 @@ public partial class MainForm : WenBaseForm
         _tabRow.Controls.Add(_tabList);
         _tabList.Controls.Add(_btnNewTab);
 
-        var btnSettings = CreateIconButton("⚙", 0, 2, (s, e) => ToggleSettingsMenu());
+        _btnSettings = CreateIconButton("⚙", 0, 2, (s, e) => ToggleSettingsMenu());
         var btnMinimize = CreateIconButton("―", 35, 2, (s, e) => WindowState = FormWindowState.Minimized);
         var btnCloseWindow = CreateIconButton("✕", 70, 2, (s, e) => this.Close()); 
         btnCloseWindow.ForeColor = Color.IndianRed;
         
         var btnGroupRight = new Panel { Dock = DockStyle.Right, Width = 110, BackColor = Color.Transparent };
-        btnGroupRight.Controls.AddRange(new Control[] { btnSettings, btnMinimize, btnCloseWindow });
+        btnGroupRight.Controls.AddRange(new Control[] { _btnSettings, btnMinimize, btnCloseWindow });
         _tabRow.Controls.Add(btnGroupRight);
         
         // 扩展可拖动区域
@@ -657,8 +658,18 @@ public partial class MainForm : WenBaseForm
     // --- 全局快捷键拦截器 ---
     private const int WM_KEYDOWN = 0x0100;
     private const int WM_SYSKEYDOWN = 0x0104;
+    private const int WM_LBUTTONDOWN = 0x0201;
     public bool PreFilterMessage(ref Message m)
     {
+        if (m.Msg == WM_LBUTTONDOWN) {
+            if (_settingsMenu != null && _settingsMenu.Visible) {
+                Point clientPos = _settingsMenu.PointToClient(Control.MousePosition);
+                Point btnPos = _btnSettings.PointToClient(Control.MousePosition);
+                if (!_settingsMenu.ClientRectangle.Contains(clientPos) && !_btnSettings.ClientRectangle.Contains(btnPos)) {
+                    _settingsMenu.Visible = false;
+                }
+            }
+        }
         if (m.Msg == WM_KEYDOWN || m.Msg == WM_SYSKEYDOWN) {
             Keys keyData = (Keys)m.WParam | Control.ModifierKeys;
             if (HandleShortcuts(keyData)) return true;
@@ -697,7 +708,6 @@ public partial class MainForm : WenBaseForm
             Tag = Opacity; 
             this.Visible = false; // 彻底消失
             ShowInTaskbar = false; 
-            _trayIcon.ShowBalloonTip(500, "Wen 浏览器", "已进入老板模式", ToolTipIcon.Info);
         }
         else { 
             this.Visible = true;

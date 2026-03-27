@@ -26,7 +26,7 @@ public static class ThemeManager
                 ContentBg = Color.FromArgb(30, 30, 30),
                 TabActive = Color.FromArgb(37, 37, 38),
                 TabInactive = Color.Transparent,
-                TextColor = Color.FromArgb(200, 200, 200),
+                TextColor = Color.White,
                 BorderColor = Color.FromArgb(45, 45, 48),
                 InputBg = Color.FromArgb(40, 40, 44),
                 HoverColor = Color.FromArgb(50, 50, 55)
@@ -37,7 +37,7 @@ public static class ThemeManager
                 ContentBg = Color.White,
                 TabActive = Color.White,
                 TabInactive = Color.FromArgb(230, 230, 230),
-                TextColor = Color.FromArgb(64, 64, 64),
+                TextColor = Color.Black,
                 BorderColor = Color.FromArgb(210, 210, 210),
                 InputBg = Color.FromArgb(235, 235, 235),
                 HoverColor = Color.FromArgb(220, 220, 220)
@@ -59,7 +59,7 @@ public static class ThemeManager
                 ContentBg = Color.White,
                 TabActive = Color.White,
                 TabInactive = Color.FromArgb(255, 225, 235),
-                TextColor = Color.FromArgb(140, 80, 100),
+                TextColor = Color.FromArgb(40, 40, 40),
                 BorderColor = Color.FromArgb(255, 210, 225),
                 InputBg = Color.FromArgb(255, 230, 240),
                 HoverColor = Color.FromArgb(255, 215, 230)
@@ -70,7 +70,7 @@ public static class ThemeManager
                 ContentBg = Color.FromArgb(20, 20, 23),
                 TabActive = Color.FromArgb(45, 45, 52),
                 TabInactive = Color.Transparent,
-                TextColor = Color.FromArgb(220, 220, 225),
+                TextColor = Color.White,
                 BorderColor = Color.FromArgb(40, 40, 45),
                 InputBg = Color.FromArgb(40, 40, 44),
                 HoverColor = Color.FromArgb(50, 50, 55)

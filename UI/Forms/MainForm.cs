@@ -334,7 +334,7 @@ public partial class MainForm : WenBaseForm
         _settingsMenu.BringToFront();
 
         int currentY = 10;
-        var lblTheme = new Label { Text = "视觉主题", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
+        var lblTheme = new Label { Text = "视觉主题", ForeColor = Color.Gray, Location = new Point(10, currentY), AutoSize = true };
         _settingsMenu.Controls.Add(lblTheme);
         currentY += 25;
 
@@ -362,7 +362,7 @@ public partial class MainForm : WenBaseForm
         _settingsMenu.Controls.Add(sep2);
         currentY += 15;
         
-        var lblFont = new Label { Text = "界面字体选择:", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
+        var lblFont = new Label { Text = "界面字体选择:", ForeColor = Color.Gray, Location = new Point(10, currentY), AutoSize = true };
         _settingsMenu.Controls.Add(lblFont);
         currentY += 25;
 
@@ -376,7 +376,7 @@ public partial class MainForm : WenBaseForm
         }
         
         currentY += 10;
-        var lblWen = new Label { Text = "核心方案 (隐蔽增强):", ForeColor = Color.White, Location = new Point(10, currentY), AutoSize = true };
+        var lblWen = new Label { Text = "核心方案 (隐蔽增强):", ForeColor = Color.Gray, Location = new Point(10, currentY), AutoSize = true };
         _settingsMenu.Controls.Add(lblWen);
         currentY += 25;
 
@@ -508,8 +508,7 @@ public partial class MainForm : WenBaseForm
                 btn.FlatAppearance.MouseOverBackColor = colors.HoverColor;
             }
             else if (ctrl is Label lbl) { lbl.ForeColor = colors.TextColor; }
-            else if (ctrl is Panel p && (p == _settingsMenu || p == _headerPanel || p.Parent == _headerPanel)) UpdateControlColors(ctrl, colors);
-            else if (ctrl is FlowLayoutPanel flp) UpdateControlColors(ctrl, colors);
+            else if (ctrl.HasChildren) UpdateControlColors(ctrl, colors);
         }
     }
 

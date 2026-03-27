@@ -34,6 +34,9 @@ public partial class MainForm : WenBaseForm, IMessageFilter
     private const int OPACITY_UP_ID = 891;
     private const int OPACITY_DOWN_ID = 892;
     private const int TOGGLE_BOSS_ID = 893;
+    private const int HIDE_TO_TRAY_ID = 894;
+    private static IntPtr _hookId = IntPtr.Zero;
+    private static NativeMethods.LowLevelKeyboardProc? _keyboardProc;
 
     internal class TabData {
         public Panel TabPanel = null!;
@@ -100,12 +103,12 @@ public partial class MainForm : WenBaseForm, IMessageFilter
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        NativeMethods.RegisterHotKey(this.Handle, BOSS_KEY_ID, NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT, (uint)Keys.B);
-        NativeMethods.RegisterHotKey(this.Handle, NEW_TAB_ID, NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT, (uint)Keys.T);
-        NativeMethods.RegisterHotKey(this.Handle, CLOSE_TAB_ID, NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT, (uint)Keys.W);
-        NativeMethods.RegisterHotKey(this.Handle, OPACITY_UP_ID, NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT, (uint)Keys.Up);
-        NativeMethods.RegisterHotKey(this.Handle, OPACITY_DOWN_ID, NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT, (uint)Keys.Down);
-        NativeMethods.RegisterHotKey(this.Handle, TOGGLE_BOSS_ID, NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT, (uint)Keys.Space);
+        _keyboardProc = HookCallback;
+        using var process = System.Diagnostics.Process.GetCurrentProcess();
+        using var module = process.MainModule;
+        if (module != null) {
+            _hookId = NativeMethods.SetWindowsHookEx(NativeMethods.WH_KEYBOARD_LL, _keyboardProc, NativeMethods.GetModuleHandle(module.ModuleName), 0);
+        }
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
@@ -116,44 +119,31 @@ public partial class MainForm : WenBaseForm, IMessageFilter
             this.Visible = false;
             this.ShowInTaskbar = false;
         }
-        NativeMethods.UnregisterHotKey(this.Handle, BOSS_KEY_ID);
-        NativeMethods.UnregisterHotKey(this.Handle, NEW_TAB_ID);
-        NativeMethods.UnregisterHotKey(this.Handle, CLOSE_TAB_ID);
-        NativeMethods.UnregisterHotKey(this.Handle, OPACITY_UP_ID);
-        NativeMethods.UnregisterHotKey(this.Handle, OPACITY_DOWN_ID);
-        NativeMethods.UnregisterHotKey(this.Handle, TOGGLE_BOSS_ID);
+        if (_hookId != IntPtr.Zero) {
+            NativeMethods.UnhookWindowsHookEx(_hookId);
+        }
         base.OnFormClosing(e);
     }
 
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg == NativeMethods.WM_HOTKEY) {
-            int id = (int)m.WParam;
-            switch (id) {
-                case BOSS_KEY_ID:
-                case TOGGLE_BOSS_ID:
-                    ToggleBossKey();
-                    break;
-                case NEW_TAB_ID:
-                    CreateNewTab(SettingsManager.Current.HomeUrl);
-                    break;
-                case CLOSE_TAB_ID:
-                    if (_activeTab != null) CloseTab(_activeTab);
-                    break;
-                case OPACITY_UP_ID:
-                    this.Opacity = Math.Min(1.0, this.Opacity + 0.1);
-                    SettingsManager.Current.DefaultOpacity = this.Opacity;
-                    SettingsManager.Save();
-                    break;
-                case OPACITY_DOWN_ID:
-                    this.Opacity = Math.Max(0.1, this.Opacity - 0.1);
-                    SettingsManager.Current.DefaultOpacity = this.Opacity;
-                    SettingsManager.Save();
-                    break;
-            }
-            return;
-        }
         base.WndProc(ref m);
+    }
+
+    private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+    {
+        if (nCode >= 0 && (wParam == (IntPtr)NativeMethods.WM_KEYDOWN || wParam == (IntPtr)NativeMethods.WM_SYSKEYDOWN)) {
+            var kb = Marshal.PtrToStructure<NativeMethods.KBDLLHOOKSTRUCT>(lParam);
+            var key = (Keys)kb.vkCode;
+            bool altDown = (NativeMethods.GetKeyState(0x12) & 0x8000) != 0; // VK_MENU
+            
+            if (altDown) {
+                if (HandleShortcuts((uint)key, 0, true)) {
+                    return (IntPtr)1; // 阻止后续处理
+                }
+            }
+        }
+        return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
     }
 
     [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
@@ -697,14 +687,14 @@ public partial class MainForm : WenBaseForm, IMessageFilter
             if (key == Keys.T) { CreateNewTab(SettingsManager.Current.HomeUrl); return true; }
             if (key == Keys.W) { if (_activeTab != null) CloseTab(_activeTab); return true; }
             if (key == Keys.Space) { ToggleBossKey(); return true; }
-            if (key == Keys.Q) { WindowState = FormWindowState.Minimized; return true; }
+            if (key == Keys.Q) { this.Visible = false; this.ShowInTaskbar = false; return true; }
             if (key == Keys.B) { ToggleBossKey(); return true; }
         }
         return false;
     }
 
     private void ToggleBossKey() {
-        if (Opacity > 0.0) { 
+        if (this.Visible) { 
             Tag = Opacity; 
             this.Visible = false; // 彻底消失
             ShowInTaskbar = false; 
@@ -714,6 +704,7 @@ public partial class MainForm : WenBaseForm, IMessageFilter
             Opacity = (Tag is double op) ? op : SettingsManager.Current.DefaultOpacity; 
             ShowInTaskbar = true; 
             this.BringToFront();
+            this.Focus();
         }
     }
 }

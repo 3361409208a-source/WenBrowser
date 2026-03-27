@@ -574,7 +574,7 @@ public partial class MainForm : WenBaseForm, IMessageFilter
 
     public void NavigateTo(string url)
     {
-        if (_activeTab != null && (_activeTab.WebView.Source != null && (_activeTab.WebView.Source.ToString().Contains("xiaoheiv.top") || _activeTab.WebView.Source.ToString() == "about:blank"))) {
+        if (_activeTab != null && (_activeTab.WebView.Source != null && (_activeTab.WebView.Source.ToString().Contains("wenbrowser.top") || _activeTab.WebView.Source.ToString() == "about:blank"))) {
             _activeTab.WebView.CoreWebView2.Navigate(url);
         } else {
             CreateNewTab(url);

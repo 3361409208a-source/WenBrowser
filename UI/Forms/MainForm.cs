@@ -487,7 +487,7 @@ public partial class MainForm : WenBaseForm
         foreach (var tab in _tabs) { 
             tab.TabPanel.BackColor = colors.ContentBg; 
             tab.WebView.DefaultBackgroundColor = (theme == AppTheme.Transparent) ? Color.Transparent : colors.ContentBg;
-            UpdateTabVisual(tab, tab == _activeTab); 
+            UpdateTabVisual(tab, tab == _activeTab, colors); 
         }
         
         if (SettingsManager.Current.CurrentTheme == AppTheme.Transparent) {
@@ -507,8 +507,11 @@ public partial class MainForm : WenBaseForm
                 btn.ForeColor = (SettingsManager.Current.SearchEngineName == btn.Text) ? Color.CadetBlue : colors.TextColor;
                 btn.FlatAppearance.MouseOverBackColor = colors.HoverColor;
             }
-            else if (ctrl is Label lbl) { lbl.ForeColor = colors.TextColor; }
-            else if (ctrl.HasChildren) UpdateControlColors(ctrl, colors);
+            else {
+                ctrl.ForeColor = colors.TextColor;
+            }
+            
+            if (ctrl.HasChildren) UpdateControlColors(ctrl, colors);
         }
     }
 
@@ -628,16 +631,16 @@ public partial class MainForm : WenBaseForm
     {
         _activeTab = tab;
         tab.TabPanel.BringToFront();
-        foreach (var t in _tabs) UpdateTabVisual(t, t == tab);
+        var colors = ThemeManager.GetColors(SettingsManager.Current.CurrentTheme);
+        foreach (var t in _tabs) UpdateTabVisual(t, t == tab, colors);
         if (IsHandleCreated) BeginInvoke(new Action(() => { if (!tab.WebView.IsDisposed) tab.WebView.Focus(); }));
     }
 
-    private void UpdateTabVisual(TabData tab, bool active)
+    private void UpdateTabVisual(TabData tab, bool active, ThemeColors colors)
     {
-        var colors = ThemeManager.GetColors(SettingsManager.Current.CurrentTheme);
         tab.HeaderBtn.BackColor = active ? colors.TabActive : (colors.TabInactive == Color.Transparent ? Color.FromArgb(1, colors.HeaderBg) : colors.TabInactive);
         tab.HeaderBtn.Controls[0].ForeColor = colors.TextColor;
-        tab.HeaderBtn.Controls[1].ForeColor = active ? colors.TextColor : Color.FromArgb(80, 80, 80);
+        tab.HeaderBtn.Controls[1].ForeColor = colors.TextColor; 
         
         // Update font for tab title
         tab.HeaderBtn.Controls[0].Font = FontManager.GetDefaultFont(9);

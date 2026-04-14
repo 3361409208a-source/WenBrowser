@@ -601,7 +601,11 @@ public partial class MainForm : WenBaseForm, IMessageFilter
             SwitchToTab(tabData);
 
             string userDataPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WenBrowser_Data");
-            var env = await CoreWebView2Environment.CreateAsync(null, userDataPath);
+            var envOptions = new CoreWebView2EnvironmentOptions {
+                AdditionalBrowserArguments = "--enable-features=HardwareMediaKeyHandling,MediaSessionService,EnableMediaStream,ParallelDownloading,Quic --disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --max_old_space_size=4096 --enable-gpu-rasterization --enable-zero-copy --enable-accelerated-video-decode",
+                AllowSingleSignOnUsingOSPrimaryAccount = true
+            };
+            var env = await CoreWebView2Environment.CreateAsync(null, userDataPath, envOptions);
             await wv.EnsureCoreWebView2Async(env);
 
             wv.CoreWebView2.SetVirtualHostNameToFolderMapping("wen.fonts", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "fonts"), CoreWebView2HostResourceAccessKind.Allow);
@@ -624,6 +628,7 @@ public partial class MainForm : WenBaseForm, IMessageFilter
         tab.TabPanel.BringToFront();
         var colors = ThemeManager.GetColors(SettingsManager.Current.CurrentTheme);
         foreach (var t in _tabs) UpdateTabVisual(t, t == tab, colors);
+        _addressBar.Text = tab.WebView.Source?.ToString() ?? "";
         if (IsHandleCreated) BeginInvoke(new Action(() => { if (!tab.WebView.IsDisposed) tab.WebView.Focus(); }));
     }
 
